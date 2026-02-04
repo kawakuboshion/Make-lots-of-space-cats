@@ -1,6 +1,5 @@
-using NUnit.Framework;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Conveyor : MonoBehaviour
 {
@@ -14,7 +13,7 @@ public class Conveyor : MonoBehaviour
             conveyorList.Add(collision.gameObject.GetComponent<Conveyor>());
             _IsConnected = true;
         }
-        else if(conveyorList.Count < 2 && collision.gameObject.GetComponent<Conveyor>() != null)
+        else if (conveyorList.Count < 2 && collision.gameObject.GetComponent<Conveyor>() != null)
         {
             conveyorList.Add(collision.gameObject.GetComponent<Conveyor>());
         }
