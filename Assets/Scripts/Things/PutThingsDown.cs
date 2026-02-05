@@ -34,7 +34,7 @@ public class PutThingsDown : MonoBehaviour
                 //ゲームオブジェクトとマウスポインターの重なった座標を整数にしてｙに１足してゲームオブジェクトの上にくるようにする。
                 Vector3 pointerPosInt = new(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.y) + 1, Mathf.FloorToInt(hit.point.z));
                 _thingsDammy.transform.position = pointerPosInt;
-                _thingsDammy.transform.position += new Vector3(0, pointerPosInt.y - _thingsDammy.GetComponent<ThingsDammy>()._bottomVector.transform.position.y, 0);
+                _thingsDammy.transform.position += new Vector3(0, pointerPosInt.y - _thingsDammy.GetComponent<ThingsDammy>()._BottomPos.transform.position.y, 0);
 
                 if (hit.collider.gameObject.CompareTag("Ground") && GridManager.Instance.CanPlaceObjectAtPosition(pointerPosInt))
                 {

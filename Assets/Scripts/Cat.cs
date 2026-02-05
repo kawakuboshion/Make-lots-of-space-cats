@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class Cat : MonoBehaviour
 {
+    [SerializeField] public float InfoProcessLevel = 100f;
     [SerializeField] private float _speed = 1.0f;
-    public Conveyor _conveyorBelow;
+    public Things _inThings;
     public bool _isStopped = false;
     private Vector3 _startPos;
     private Vector3 _destination;
@@ -16,11 +17,16 @@ public class Cat : MonoBehaviour
         _destination = destination;
     }
 
-    public void SetConveyorBelow(Conveyor conveyor)
+    public void SetInThings(Things things)
     {
-        _conveyorBelow = conveyor;
+        _inThings = things;
     }
 
+    public void StartMoving()
+    {
+        _isStopped = false;
+        _moveTime = 0.0f;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -31,11 +37,11 @@ public class Cat : MonoBehaviour
 
         if(_moveTime >= 1.0f)
         {
-            _isStopped = true;
-            _moveTime = 0.0f;
-            if(_conveyorBelow != null)
+            if(_inThings != null)
             {
-                _conveyorBelow.MoveTheCat();
+                _isStopped = true;
+                _moveTime = 0.0f;
+                _inThings.MoveTheCat();
             }
         }
     }

@@ -1,16 +1,36 @@
 using UnityEngine;
 
-public class Exit : MonoBehaviour
+public class Exit : Things
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Transform _removePoint;
+
+    public void Update()
     {
-        
+        if (_cat != null&&_cat._isStopped)
+        {
+            RemoveTheCat();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void MoveTheCat()
     {
-        
+        if (_cat != null)
+        {
+            _cat.StartMoving();
+            RemoveTheCat();
+        }
+    }
+
+    public void RemoveTheCat()
+    {
+        if (_cat != null)
+        {
+            if(_cat.InfoProcessLevel <= 0f)
+            {
+                GameManager.Instance.AddEnergy(10f);
+            }
+            Destroy(_cat.gameObject);
+            _cat = null;
+        }
     }
 }

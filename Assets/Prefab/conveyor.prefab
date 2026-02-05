@@ -242,9 +242,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 830f5417fc130814ca46d33bd91b9eb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bottomVector: {fileID: 2955162428594700287}
-  _top: {fileID: 4967391090176436844}
+  _BottomPos: {fileID: 9077580922746348998}
+  _ToMovePos: {fileID: 5863181885774026628}
+  _ThingType: 0
+  _nextThings: {fileID: 0}
   _cat: {fileID: 0}
+  _top: {fileID: 4967391090176436844}
   _speed: 1
 --- !u!1 &8548257585868961254
 GameObject:

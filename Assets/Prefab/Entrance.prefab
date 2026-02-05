@@ -349,7 +349,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d162f5bb77e01da42a32687e46b5ebe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bottomVector: {fileID: 3661791558742118683}
+  _BottomPos: {fileID: 3661791558742118683}
+  _ToMovePos: {fileID: 8862443578495900444}
+  _ThingType: 1
+  _nextThings: {fileID: 0}
+  _cat: {fileID: 2737569909924101789, guid: f35e129df253fe848b0c797ddf711361, type: 3}
   _spawnPoint: {fileID: 8862443578495900444}
-  _cat: {fileID: 2992027631348933496, guid: f35e129df253fe848b0c797ddf711361, type: 3}
-  _nextConveyor: {fileID: 0}

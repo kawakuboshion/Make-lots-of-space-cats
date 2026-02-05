@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -11,10 +12,12 @@ public class GameManager : MonoBehaviour
         Delete,
         Conveyor,
         Entrance,
+        Exit
     }
 
     public List<GameObject> _thingsPrefabs;
     public List<GameObject> _thingsDammyPrefabs;
+    private float _Energy = 0f;
     public static GameManager Instance { get; private set; }
 
     private void Awake()
@@ -79,5 +82,10 @@ public class GameManager : MonoBehaviour
             PutThingsDown.Instance.ChangeThings(putThings, putThingsDummy);
             return;
         }
+    }
+
+    public void AddEnergy(float amount)
+    {
+        _Energy += amount;
     }
 }
