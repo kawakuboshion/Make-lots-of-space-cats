@@ -68,12 +68,13 @@ public class PutThingsDown : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0) && _canPutThings && GameManager.Instance._putState != GameManager.PutState.None)
         {
-            GridManager.Instance.RegisterPlacedObject(_thingsDammy.transform.position, Instantiate(_things, _thingsDammy.transform.position, Quaternion.identity));
+            GridManager.Instance.RegisterPlacedObject(_thingsDammy.transform.position, Instantiate(_things, _thingsDammy.transform.position, _thingsDammy.transform.rotation));
         }
     }
 
     public void ChangeThings(GameObject things, GameObject thingsDammy)
     {
+        if (_things != null) { _thingsDammy.SetActive(false); }
         _things = things;
         _thingsDammy = thingsDammy;
         Debug.Log($"Put Things Changed: {_things.name}, {_thingsDammy.name}");
