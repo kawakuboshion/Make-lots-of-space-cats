@@ -4,7 +4,9 @@ public class PutThingsDown : MonoBehaviour
 {
     [SerializeField] private GameObject _things;
     [SerializeField] private GameObject _thingsDammy;
+    private GameManager _gameManager = GameManager.Instance;
     private Camera _mainCam;
+    private float _thingsPrice;
     private bool _canPutThings = false;
     public static PutThingsDown Instance { get; private set; }
 
@@ -27,7 +29,7 @@ public class PutThingsDown : MonoBehaviour
     {
         Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
 
-        if (GameManager.Instance._putState != GameManager.PutState.None && GameManager.Instance._putState != GameManager.PutState.Delete)
+        if (_gameManager._putState != GameManager.PutState.None && _gameManager._putState != GameManager.PutState.Delete)
         {
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
@@ -66,17 +68,24 @@ public class PutThingsDown : MonoBehaviour
 
     private void OnClickPutThings()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && _canPutThings && GameManager.Instance._putState != GameManager.PutState.None)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && _canPutThings && _gameManager._putState != GameManager.PutState.None)
         {
-            GridManager.Instance.RegisterPlacedObject(_thingsDammy.transform.position, Instantiate(_things, _thingsDammy.transform.position, _thingsDammy.transform.rotation));
+            if(_gameManager.GetMoney() >= _thingsPrice)
+            {
+                Things things = Instantiate(_things, _thingsDammy.transform.position, _thingsDammy.transform.rotation).GetComponent<Things>();
+                GridManager.Instance.RegisterPlacedObject(_thingsDammy.transform.position, things.gameObject);
+                things.FindNextThings();
+                _gameManager.RemoveMoney(_thingsPrice);
+            }
         }
     }
 
-    public void ChangeThings(GameObject things, GameObject thingsDammy)
+    public void ChangeThings(GameObject things, GameObject thingsDammy, float thingsPrice)
     {
         if (_things != null) { _thingsDammy.SetActive(false); }
         _things = things;
         _thingsDammy = thingsDammy;
+        _thingsPrice = thingsPrice;
         Debug.Log($"Put Things Changed: {_things.name}, {_thingsDammy.name}");
     }
 }

@@ -3,20 +3,9 @@ using UnityEngine;
 public class Entrance : Things
 {
     [SerializeField] private Transform _spawnPoint;
-
     void Update()
     {
-        if (_nextThings == null)
-        {
-            Debug.Log("Searching for next conveyor");
-            GameObject next = GridManager.Instance.GetObjectAtPosition(transform.position+transform.forward);
-            if (next != null)
-            {
-                Debug.Log("Found next conveyor");
-                _nextThings = next.GetComponent<Things>() != null ? next.GetComponent<Things>() : null;
-            }
-        }
-        else
+        if (_nextThings != null)
         {
             MoveTheCat();
         }

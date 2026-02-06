@@ -1,14 +1,22 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Cat : MonoBehaviour
 {
-    [SerializeField] public float InfoProcessLevel = 100f;
+    [SerializeField] private Slider _infoProcessSlider;
+    [SerializeField] public float _InfoProcessLevel = 100f;
     [SerializeField] private float _speed = 1.0f;
     public Things _inThings;
     public bool _isStopped = false;
     private Vector3 _startPos;
     private Vector3 _destination;
     private float _moveTime;
+
+    private void Start()
+    {
+        _infoProcessSlider.maxValue = _InfoProcessLevel;
+        _infoProcessSlider.value = _InfoProcessLevel;
+    }
 
     public void SetDestination(Vector3 destination)
     {
@@ -26,6 +34,16 @@ public class Cat : MonoBehaviour
     {
         _isStopped = false;
         _moveTime = 0.0f;
+    }
+
+    public void ReduceInfoProcessLevel(float amount)
+    {
+        _InfoProcessLevel -= amount;
+        if (_InfoProcessLevel < 0f)
+        {
+            _InfoProcessLevel = 0f;
+        }
+        _infoProcessSlider.value = _InfoProcessLevel;
     }
     // Update is called once per frame
     void Update()

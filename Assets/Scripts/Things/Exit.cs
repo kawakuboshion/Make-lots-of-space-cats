@@ -3,6 +3,7 @@ using UnityEngine;
 public class Exit : Things
 {
     [SerializeField] private Transform _removePoint;
+    private GameManager _gameManager = GameManager.Instance;
 
     public void Update()
     {
@@ -25,9 +26,9 @@ public class Exit : Things
     {
         if (_cat != null)
         {
-            if(_cat.InfoProcessLevel <= 0f)
+            if(_cat._InfoProcessLevel <= 0f)
             {
-                GameManager.Instance.AddEnergy(10f);
+                _gameManager.AddEnergy(10f);
             }
             Destroy(_cat.gameObject);
             _cat = null;
