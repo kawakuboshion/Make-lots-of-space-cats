@@ -2,24 +2,29 @@ using UnityEngine;
 
 public class OnClickSellEnergy : MonoBehaviour
 {
-    [SerializeField] private float energyToSell = 10f; // 売るエネルギーの量
-    [SerializeField] private float moneyPerEnergy = 5f; // エネルギー1単位あたりの金額
-    GameManager gm = GameManager.Instance;
+    [SerializeField] private float _energyToSell = 10f; // 売るエネルギーの量
+    [SerializeField] private float _moneyPerEnergy = 5f; // エネルギー1単位あたりの金額
+    GameManager _gameManager = GameManager.Instance;
     public void SellEnergy()
     {
-        if (gm != null)
+        if (_gameManager != null)
         {
+            Debug.Log("Attempting to sell energy...");
             // エネルギーが十分にあるか確認
-            if (gm.GetEnergy() >= energyToSell)
+            if (_gameManager.GetEnergy() >= _energyToSell)
             {
-                gm.RemoveEnergy(energyToSell);
-                gm.AddMoney(energyToSell * moneyPerEnergy);
-                Debug.Log($"Sold {energyToSell} energy for {energyToSell * moneyPerEnergy} money.");
+                _gameManager.RemoveEnergy(_energyToSell);
+                _gameManager.AddMoney(_energyToSell * _moneyPerEnergy);
+                Debug.Log($"Sold {_energyToSell} energy for {_energyToSell * _moneyPerEnergy} money.");
             }
             else
             {
                 Debug.Log("Not enough energy to sell.");
             }
+        }
+        else
+        {
+            _gameManager = GameManager.Instance;
         }
     }
 }

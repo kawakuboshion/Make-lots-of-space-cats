@@ -8,8 +8,16 @@ public class Things : MonoBehaviour
     [SerializeField] protected Things _nextThings;
     [SerializeField] public float _Price;
     [SerializeField] public Cat _cat;
+    [SerializeField] public string _thingName;
     private GridManager _gridManager = GridManager.Instance;
 
+    void Start()
+    {
+        if (_gridManager == null)
+        {
+            _gridManager = GridManager.Instance;
+        }
+    }
     public virtual void MoveTheCat()
     {
         // Override in derived classes

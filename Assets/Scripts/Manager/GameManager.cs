@@ -6,24 +6,25 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _Energy_Text;
-    [SerializeField] TextMeshProUGUI _PutState_Text;
-    [SerializeField] TextMeshProUGUI _Money_Text;
+    [SerializeField] private TextMeshProUGUI _Energy_Text;
+    [SerializeField] private TextMeshProUGUI _PutState_Text;
+    [SerializeField] private TextMeshProUGUI _Money_Text;
+    [SerializeField] private float _Energy = 0f;
+    [SerializeField] private float _Money = 0f;
     public PutState _putState { get; private set; } = PutState.None;
+
+    public List<GameObject> _thingsPrefabs;
+    public List<GameObject> _thingsDammyPrefabs;
+    public static GameManager Instance { get; private set; }
     public enum PutState
     {
         None,
         Delete,
         Conveyor,
         Entrance,
-        Exit
+        Exit,
+        ProvidInfoMachine
     }
-
-    public List<GameObject> _thingsPrefabs;
-    public List<GameObject> _thingsDammyPrefabs;
-    private float _Energy = 0f;
-    private float _Money = 0f;
-    public static GameManager Instance { get; private set; }
 
     private void Awake()
     {
@@ -35,6 +36,10 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        AddEnergy(0f);
+        AddMoney(0f);
+        UpdatePutStateText("何もしない");
+        ChangePutState(PutState.None, null, null, 0);
     }
 
     private void Update()
@@ -55,11 +60,11 @@ public class GameManager : MonoBehaviour
                 switch (number)
                 {
                     case 0:
-                        Debug.Log("Noneモードに変更");
+                        UpdatePutStateText("何もしない");
                         ChangePutState(PutState.None, null, null, 0);
                         break;
                     case 1:
-                        Debug.Log("Deleteモードに変更");
+                        UpdatePutStateText("置いたものを消す");
                         ChangePutState(PutState.Delete, null, null, 0);
                         break;
                     default:
@@ -69,7 +74,7 @@ public class GameManager : MonoBehaviour
                             int selectedIndex = number - (int)PutState.Delete * 2;//押された数字からDelete分を引いたインデックスで取得
                             float thingsPrice = _thingsPrefabs[selectedIndex].GetComponent<Things>()._Price;
                             ChangePutState(selectedState, _thingsPrefabs[selectedIndex], _thingsDammyPrefabs[selectedIndex], thingsPrice);
-                            Debug.Log($"{selectedState}モードに変更");
+                            UpdatePutStateText(_thingsPrefabs[selectedIndex].GetComponent<Things>()._thingName + "を置く");
                         }
                         else
                         {
@@ -91,6 +96,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void UpdatePutStateText(string text)
+    {
+        _PutState_Text.text = "現在の行動 : " + text;
+    }
+
     public float GetEnergy()
     {
         return _Energy;
@@ -104,24 +114,24 @@ public class GameManager : MonoBehaviour
     public void AddEnergy(float amount)
     {
         _Energy += amount;
-        _Energy_Text.text = "Energy: " + _Energy.ToString("F1");
+        _Energy_Text.text = "Energy: " + _Energy.ToString("F0");
     }
 
     public void AddMoney(float amount)
     {
         _Money += amount;
-        _Money_Text.text = "Money: " + _Money.ToString("F1");
+        _Money_Text.text = "Money: " + _Money.ToString("F0");
     }
 
     public void RemoveEnergy(float amount)
     {
         _Energy -= amount;
-        _Energy_Text.text = "Energy: " + _Energy.ToString("F1");
+        _Energy_Text.text = "Energy: " + _Energy.ToString("F0");
     }
 
     public void RemoveMoney(float amount)
     {
         _Money -= amount;
-        _Money_Text.text = "Money: " + _Money.ToString("F1");
+        _Money_Text.text = "Money: " + _Money.ToString("F0");
     }
 }

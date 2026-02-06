@@ -20,6 +20,10 @@ public class PutThingsDown : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        if(_gameManager == null)
+        {
+            _gameManager = GameManager.Instance;
+        }
     }
     private void Start()
     {
@@ -75,6 +79,7 @@ public class PutThingsDown : MonoBehaviour
                 Things things = Instantiate(_things, _thingsDammy.transform.position, _thingsDammy.transform.rotation).GetComponent<Things>();
                 GridManager.Instance.RegisterPlacedObject(_thingsDammy.transform.position, things.gameObject);
                 things.FindNextThings();
+                things.ConnectBackThings();
                 _gameManager.RemoveMoney(_thingsPrice);
             }
         }

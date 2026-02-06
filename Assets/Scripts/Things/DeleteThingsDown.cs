@@ -19,6 +19,14 @@ public class DeleteThingsDown : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        if (_gameManager == null)
+        {
+            _gameManager = GameManager.Instance;
+        }
+        if(_gridManager == null)
+        {
+            _gridManager = GridManager.Instance;
+        }
     }
     private void Start()
     {
