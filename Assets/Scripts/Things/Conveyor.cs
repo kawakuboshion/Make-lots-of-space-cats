@@ -13,6 +13,7 @@ public class Conveyor : Things
             _nextThings._cat = _cat;
             _cat.SetInThings(_nextThings);
             _cat.SetDestination(_nextThings.GetToMovePosition());
+            _cat.StartMoving();
             _cat = null;
         }
     }

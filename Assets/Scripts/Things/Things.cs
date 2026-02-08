@@ -54,6 +54,11 @@ public class Things : MonoBehaviour
     {
         Conveyor,
         Entrance,
-        Exit
+        Exit,
+        ProvideInfoBox,
+        ProvideInfoMushroom,
+        ProvideInfoMatatabi,
+        ProvidInfoMachine,
+        ProvideInfoWater
     }
 }

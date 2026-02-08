@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class Cat : MonoBehaviour
 {
+    [SerializeField] private Canvas _infoCanvas;
     [SerializeField] private Slider _infoProcessSlider;
     [SerializeField] public float _InfoProcessLevel = 100f;
     [SerializeField] private float _speed = 1.0f;
@@ -48,6 +49,7 @@ public class Cat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        _infoCanvas.transform.LookAt(Camera.main.transform);
         if (_isStopped) { return; }
 
         _moveTime += Time.deltaTime * _speed;
@@ -57,8 +59,6 @@ public class Cat : MonoBehaviour
         {
             if(_inThings != null)
             {
-                _isStopped = true;
-                _moveTime = 0.0f;
                 _inThings.MoveTheCat();
             }
         }

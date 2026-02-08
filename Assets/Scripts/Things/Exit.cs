@@ -4,21 +4,24 @@ public class Exit : Things
 {
     [SerializeField] private Transform _removePoint;
     private GameManager _gameManager = GameManager.Instance;
-
-    public void Update()
-    {
-        if (_cat != null&&_cat._isStopped)
-        {
-            RemoveTheCat();
-        }
-    }
-
+    private GridManager _gridManager = GridManager.Instance;
     public override void MoveTheCat()
     {
         if (_cat != null)
         {
             _cat.StartMoving();
+            _cat.SetInThings(this);
+            _cat.SetDestination(_removePoint.position);
             RemoveTheCat();
+        }
+    }
+
+    public override void ConnectBackThings()
+    {
+        GameObject back = _gridManager.GetObjectAtPosition(transform.position + transform.forward);
+        if (back != null)
+        {
+            back.GetComponent<Things>().FindNextThings();
         }
     }
 

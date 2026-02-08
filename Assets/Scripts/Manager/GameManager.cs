@@ -23,7 +23,11 @@ public class GameManager : MonoBehaviour
         Conveyor,
         Entrance,
         Exit,
-        ProvidInfoMachine
+        ProvideInfoBox,
+        ProvideInfoMushroom,
+        ProvideInfoMatatabi,
+        ProvidInfoMachine,
+        ProvideInfoWater
     }
 
     private void Awake()

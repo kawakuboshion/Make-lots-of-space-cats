@@ -19,6 +19,7 @@ public class Entrance : Things
             _nextThings._cat = Instantiate(_cat, _spawnPoint.transform.position, transform.rotation).GetComponent<Cat>();
             _nextThings._cat.SetInThings(_nextThings);
             _nextThings._cat.SetDestination(_nextThings.GetToMovePosition());
+            _cat.StartMoving();
         }
     }
 }
