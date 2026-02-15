@@ -2,39 +2,23 @@ using UnityEngine;
 
 public class DeleteThingsDown : MonoBehaviour
 {
+    [SerializeField] private GridManager _gridManager;
     [SerializeField] private GameObject _deleteDammy;
+    private ChangePutThings.PutState _putState;
     private Camera _mainCam;
     private bool _canDeleteThings = false;
     private GameManager _gameManager = GameManager.Instance;
-    private GridManager _gridManager = GridManager.Instance;
-    public static DeleteThingsDown Instance { get; private set; }
-
-    private void Awake()
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        _mainCam = Camera.main;
         if (_gameManager == null)
         {
             _gameManager = GameManager.Instance;
         }
-        if(_gridManager == null)
-        {
-            _gridManager = GridManager.Instance;
-        }
-    }
-    private void Start()
-    {
-        _mainCam = Camera.main;
     }
     private void Update()
     {
-        if (_gameManager._putState != GameManager.PutState.Delete) { return; }
+        if (_putState != ChangePutThings.PutState.Delete) { return; }
 
         Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
@@ -62,9 +46,19 @@ public class DeleteThingsDown : MonoBehaviour
         {
             GameObject remove = _gridManager.GetObjectAtPosition(_deleteDammy.transform.position);
             _gridManager.UnregisterPlacedObject(_deleteDammy.transform.position);
-            _gameManager.AddMoney(remove.GetComponent<Things>()._Price);
-            Destroy(remove.GetComponent<Things>()._cat);
+            Things things = remove.GetComponent<Things>();
+            _gameManager.SetLogText($"{things._thingName}Çè¡ÇµÇΩ", true);
+            _gameManager.AddMoney(things._Price);
+            if(things._cat != null)
+            {
+                things._cat.GetComponent<PooledObject>().Release();
+            }
             Destroy(remove);
         }
+    }
+
+    public void ChangePutState(ChangePutThings.PutState putState)
+    {
+        _putState = putState;
     }
 }

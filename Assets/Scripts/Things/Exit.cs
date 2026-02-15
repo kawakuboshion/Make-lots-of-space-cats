@@ -4,7 +4,6 @@ public class Exit : Things
 {
     [SerializeField] private Transform _removePoint;
     private GameManager _gameManager = GameManager.Instance;
-    private GridManager _gridManager = GridManager.Instance;
     public override void MoveTheCat()
     {
         if (_cat != null)
@@ -16,7 +15,7 @@ public class Exit : Things
         }
     }
 
-    public override void ConnectBackThings()
+    public override void FindBackThings()
     {
         GameObject back = _gridManager.GetObjectAtPosition(transform.position + transform.forward);
         if (back != null)
@@ -29,11 +28,13 @@ public class Exit : Things
     {
         if (_cat != null)
         {
-            if(_cat._InfoProcessLevel <= 0f)
+            AudioManager.Instance.PlaySE(AudioManager.SE.Cat_Disappeared);
+            if (_cat._InfoProcessLevel <= 0f)
             {
                 _gameManager.AddEnergy(10f);
+                _gameManager.AddSpaceCatCounter(1);
             }
-            Destroy(_cat.gameObject);
+            _cat.GetComponent<PooledObject>().Release();
             _cat = null;
         }
     }

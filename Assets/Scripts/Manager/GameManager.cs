@@ -1,34 +1,49 @@
-using System;
-using System.Collections.Generic;
+using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _Energy_Text;
-    [SerializeField] private TextMeshProUGUI _PutState_Text;
-    [SerializeField] private TextMeshProUGUI _Money_Text;
-    [SerializeField] private float _Energy = 0f;
-    [SerializeField] private float _Money = 0f;
-    public PutState _putState { get; private set; } = PutState.None;
-
-    public List<GameObject> _thingsPrefabs;
-    public List<GameObject> _thingsDammyPrefabs;
+    [SerializeField] private Canvas _result_Canvas;
+    [SerializeField] private TextMeshProUGUI _resultTitle_Text;
+    [SerializeField] private TextMeshProUGUI _resultScore_Text;
+    [SerializeField] private TextMeshProUGUI _resultTotalScore_Text;
+    [SerializeField] private TextMeshProUGUI _result_Text;
+    [SerializeField] private TextMeshProUGUI _energy_Text;
+    [SerializeField] private TextMeshProUGUI _money_Text;
+    [SerializeField] private TextMeshProUGUI _energyProductionPerSecond_Text;
+    [SerializeField] private TextMeshProUGUI _factorySurvivalTime_Text;
+    [SerializeField] private TextMeshProUGUI _targetProductionAmount_Text;
+    [SerializeField] private TextMeshProUGUI _intervalCountDown_Text;
+    [SerializeField] private TextMeshProUGUI _spaceCatCounter_Text;
+    [SerializeField] private TextMeshProUGUI _log_Text;
+    [SerializeField] private Slider _cityRageGauge_Slider;
+    [SerializeField] private Slider _catRageGauge_Slider;
+    [SerializeField] private CameraMove _cameraMove;
+    [SerializeField] private Ranking _ranking;
+    [SerializeField] private Color _defaultLogColor;
+    [SerializeField] private Color _errorLogColor;
+    [SerializeField] private float _energy = 0f;
+    [SerializeField] private float _money = 0f;
+    [SerializeField] private float _cityRageGaugeMax = 100f;
+    [SerializeField] private float _catRageGaugeMax = 100f;
+    [SerializeField] private float _reductionInAnger = 5f;
+    [SerializeField] private int _initialTargetProductionAmount = 10;
+    [SerializeField] private int _initialCheckEnergyInterval = 60;
+    [SerializeField] private int _targetProductionIncreaseAmount = 10;
+    [SerializeField] private int _checkEnergyIntervalMax = 30;
+    [SerializeField] private int _checkEnergyIntervalMin = 5;
+    private float _cityRageGauge = 0f;
+    private float _catRageGauge = 0f;
+    private float _energyProductionPerSecond = 0f;
+    private float _targetProductionAmount = 10f;
+    private float _lastEnergy = 0f;
+    private float _factorySurvivalTime = 0f;
+    private int _checkEnergyInterval;
+    private int _spaceCatsCounter = 0;
+    private int _logCount = 0;
     public static GameManager Instance { get; private set; }
-    public enum PutState
-    {
-        None,
-        Delete,
-        Conveyor,
-        Entrance,
-        Exit,
-        ProvideInfoBox,
-        ProvideInfoMushroom,
-        ProvideInfoMatatabi,
-        ProvidInfoMachine,
-        ProvideInfoWater
-    }
 
     private void Awake()
     {
@@ -42,100 +57,220 @@ public class GameManager : MonoBehaviour
         }
         AddEnergy(0f);
         AddMoney(0f);
-        UpdatePutStateText("何もしない");
-        ChangePutState(PutState.None, null, null, 0);
     }
 
-    private void Update()
+    private void Start()
     {
-        ChangePutThings();
+        StartCoroutine(PrintProductionPerSecond());
+        StartCoroutine(UpdateFactorySurvivalTime());
+        SetNewTargetProductionAmountIncrease(_initialTargetProductionAmount);
+        SetNewInterval(_initialCheckEnergyInterval);
+        StartCoroutine(CheckEnergyByNeeds());
+        _result_Canvas.gameObject.SetActive(false);
+        _cityRageGauge_Slider.maxValue = _cityRageGaugeMax;
+        _catRageGauge_Slider.maxValue = _catRageGaugeMax;
+        AudioManager.Instance.PlayBGM(AudioManager.BGM.Stage);
     }
 
-    private void ChangePutThings()
+    private IEnumerator CheckEnergyByNeeds()
     {
-        if (Input.anyKeyDown) // 何らかのキーが押された時
+        int countdown = _checkEnergyInterval;
+        while (true)
         {
-            string keyStr = Input.inputString;
-
-            // 数字かどうかを判定する例
-            if (int.TryParse(keyStr, out int number))
+            yield return new WaitForSeconds(1f);
+            countdown--;
+            _intervalCountDown_Text.text = "次のチェックまで : " + countdown.ToString("F0") + "秒";
+            if(countdown <= 0)
             {
-                Debug.Log("数字が入力されました: " + number);
-                switch (number)
+                float requiredEnergy = _targetProductionAmount;
+                if (_energyProductionPerSecond == requiredEnergy)
                 {
-                    case 0:
-                        UpdatePutStateText("何もしない");
-                        ChangePutState(PutState.None, null, null, 0);
-                        break;
-                    case 1:
-                        UpdatePutStateText("置いたものを消す");
-                        ChangePutState(PutState.Delete, null, null, 0);
-                        break;
-                    default:
-                        if (Enum.GetValues(typeof(PutState)).Length > number)
-                        {
-                            PutState selectedState = (PutState)Enum.ToObject(typeof(PutState), number);
-                            int selectedIndex = number - (int)PutState.Delete * 2;//押された数字からDelete分を引いたインデックスで取得
-                            float thingsPrice = _thingsPrefabs[selectedIndex].GetComponent<Things>()._Price;
-                            ChangePutState(selectedState, _thingsPrefabs[selectedIndex], _thingsDammyPrefabs[selectedIndex], thingsPrice);
-                            UpdatePutStateText(_thingsPrefabs[selectedIndex].GetComponent<Things>()._thingName + "を置く");
-                        }
-                        else
-                        {
-                            Debug.Log("対応するモードが存在しません");
-                        }
-                        break;
+                    SetLogText("エネルギー生産量が目標を達成しています。");
+                    AudioManager.Instance.PlaySE(AudioManager.SE.Happy);
+                    RemoveCatRageGauge(_reductionInAnger);
+                    RemoveCityRageGauge(_reductionInAnger);
                 }
+                else if (_energyProductionPerSecond > requiredEnergy)
+                {
+                    SetLogText("エネルギー生産量が目標を上回っています。", true);
+                    _cameraMove.ShakeCamera();
+                    AudioManager.Instance.PlaySE(AudioManager.SE.Cat_Anger);
+                    AddCatRageGauge(_energyProductionPerSecond - requiredEnergy);
+                    if(_catRageGauge >= _catRageGaugeMax)
+                    {
+                        ShowResult("エネルギーを作りすぎてネコたちがおこった。");
+                        yield break;
+                    }
+                }
+                else
+                {
+                    SetLogText("エネルギー生産量が目標を下回っています。", true);
+                    _cameraMove.ShakeCamera();
+                    AudioManager.Instance.PlaySE(AudioManager.SE.Anger);
+                    AddCityRageGauge(requiredEnergy - _energyProductionPerSecond);
+                    if(_cityRageGauge >= _cityRageGaugeMax)
+                    {
+                        ShowResult("エネルギーが足りなくて市民がおこった。");
+                        yield break;
+                    }
+                }
+                SetNewTargetProductionAmountIncrease(_targetProductionIncreaseAmount);
+                SetNewInterval(UnityEngine.Random.Range(_checkEnergyIntervalMin, _checkEnergyIntervalMax));
+                countdown = _checkEnergyInterval;
             }
         }
     }
 
-    private void ChangePutState(PutState state, GameObject putThings, GameObject putThingsDummy, float thingsPrice)
+    private void ShowResult(string cause)
     {
-        _putState = state;
-        if (putThings != null || putThingsDummy != null)
+        Time.timeScale = 0f; // ゲームを停止
+        AudioManager.Instance.PlayBGM(AudioManager.BGM.Result);
+
+        _resultTitle_Text.text = "工場がこわされました！\n" +
+                                 "原因 : " + cause;
+
+        _result_Text.text = "最終目標生産量 : " + _targetProductionAmount.ToString("F0") + "/s\n" +
+                            "最終エネルギー生産量 : " + _energyProductionPerSecond.ToString("F0") + "/s\n" +
+                            "最終エネルギー所持量 : " + _energy.ToString("F0") + "\n" +
+                            "最終お金所持量 : " + _money.ToString("F0") + "\n" +
+                            "工場生存時間 : " + _factorySurvivalTime.ToString("F0") + "秒\n" +
+                            "宇宙ネコの数 : " + _spaceCatsCounter;
+
+        _resultScore_Text.text = _targetProductionAmount * 10 + "\n" +
+                                 _energyProductionPerSecond * 10 + "\n" +
+                                 _energy * 5 + "\n" +
+                                 _money * 5 + "\n" +
+                                 _factorySurvivalTime * 100 + "\n" +
+                                 _spaceCatsCounter * 100 + "\n";
+
+        float totalScore = CalculateScore();
+
+        _resultTotalScore_Text.text = "総合スコア : " + totalScore.ToString("F0");
+
+        _result_Canvas.gameObject.SetActive(true);
+        _ranking.AddScore(totalScore);
+    }
+
+    private float CalculateScore()
+    {
+        return _targetProductionAmount * 10 + 
+               _energyProductionPerSecond * 10 + 
+               _energy * 5 + 
+               _money * 5 + 
+               _factorySurvivalTime * 100 + 
+               _spaceCatsCounter * 100;
+    }
+    private void SetNewTargetProductionAmountIncrease(float amount)
+    {
+        _targetProductionAmount += amount;
+        _targetProductionAmount_Text.text = "目標生産量 : " + _targetProductionAmount.ToString("F0") + "/s";
+    }
+
+    private void SetNewInterval(int interval)
+    {
+        _checkEnergyInterval = interval;
+    }
+    private IEnumerator PrintProductionPerSecond()
+    {
+        while (true)
         {
-            PutThingsDown.Instance.ChangeThings(putThings, putThingsDummy, thingsPrice);
-            return;
+            yield return new WaitForSeconds(1f);
+            _energyProductionPerSecond = _energy - _lastEnergy;
+            _energyProductionPerSecond_Text.text = "エネルギーの生産量 : " + (_energyProductionPerSecond).ToString("F0") + "/s";
+            _lastEnergy = _energy;
+        }
+    }
+    private IEnumerator UpdateFactorySurvivalTime()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+            _factorySurvivalTime += 1f;
+            _factorySurvivalTime_Text.text = "工場生存時間 : " + _factorySurvivalTime.ToString("F0") + "秒";
         }
     }
 
-    public void UpdatePutStateText(string text)
+    public void SetLogText(string message, bool isError = false)
     {
-        _PutState_Text.text = "現在の行動 : " + text;
+        _log_Text.text += message + "\n";
+        _log_Text.color = isError ? _errorLogColor : _defaultLogColor;
+        _logCount++;
+        if (_logCount > 5)
+        {
+            _log_Text.text = _log_Text.text.Remove(0, _log_Text.text.IndexOf('\n') + 1);// 古いログを削除して最新の5件のみを表示
+            _logCount--;
+        }
+        Debug.Log(_logCount);
     }
-
     public float GetEnergy()
     {
-        return _Energy;
+        return _energy;
     }
 
     public float GetMoney()
     {
-        return _Money;
+        return _money;
     }
 
     public void AddEnergy(float amount)
     {
-        _Energy += amount;
-        _Energy_Text.text = "Energy: " + _Energy.ToString("F0");
+        _energy += amount;
+        _energy_Text.text = "Energy: " + _energy.ToString("F0");
     }
 
     public void AddMoney(float amount)
     {
-        _Money += amount;
-        _Money_Text.text = "Money: " + _Money.ToString("F0");
+        _money += amount;
+        _money_Text.text = "Money: " + _money.ToString("F0");
+    }
+
+    public void AddCityRageGauge(float amount)
+    {
+        _cityRageGauge += amount;
+        _cityRageGauge_Slider.value = _cityRageGauge;
+    }
+
+    public void AddCatRageGauge(float amount)
+    {
+        _catRageGauge += amount;
+        _catRageGauge_Slider.value = _catRageGauge;
+    }
+
+    public void AddSpaceCatCounter(int amount)
+    {
+        _spaceCatsCounter += amount;
+        _spaceCatCounter_Text.text = "宇宙ネコの数 : " + _spaceCatsCounter.ToString();
     }
 
     public void RemoveEnergy(float amount)
     {
-        _Energy -= amount;
-        _Energy_Text.text = "Energy: " + _Energy.ToString("F0");
+        _energy -= amount;
+        _energy_Text.text = "Energy: " + _energy.ToString("F0");
     }
 
     public void RemoveMoney(float amount)
     {
-        _Money -= amount;
-        _Money_Text.text = "Money: " + _Money.ToString("F0");
+        _money -= amount;
+        _money_Text.text = "Money: " + _money.ToString("F0");
+    }
+
+    public void RemoveCityRageGauge(float amount)
+    {
+        _cityRageGauge -= amount;
+        if (_cityRageGauge < 0f)
+        {
+            _cityRageGauge = 0f;
+        }
+        _cityRageGauge_Slider.value = _cityRageGauge;
+    }
+
+    public void RemoveCatRageGauge(float amount)
+    {
+        _catRageGauge -= amount;
+        if (_catRageGauge < 0f)
+        {
+            _catRageGauge = 0f;
+        }
+        _catRageGauge_Slider.value = _catRageGauge;
     }
 }

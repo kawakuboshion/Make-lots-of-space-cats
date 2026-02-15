@@ -4,36 +4,26 @@ public class PutThingsDown : MonoBehaviour
 {
     [SerializeField] private GameObject _things;
     [SerializeField] private GameObject _thingsDammy;
-    private GameManager _gameManager = GameManager.Instance;
+    [SerializeField] private GridManager _gridManager;
+    [SerializeField] private GameManager _gameManager = GameManager.Instance;
+    private ChangePutThings.PutState _PutState;
     private Camera _mainCam;
     private float _thingsPrice;
     private bool _canPutThings = false;
-    public static PutThingsDown Instance { get; private set; }
 
-    private void Awake()
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        _mainCam = Camera.main;
         if(_gameManager == null)
         {
             _gameManager = GameManager.Instance;
         }
     }
-    private void Start()
-    {
-        _mainCam = Camera.main;
-    }
     private void Update()
     {
         Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
 
-        if (_gameManager._putState != GameManager.PutState.None && _gameManager._putState != GameManager.PutState.Delete)
+        if (_PutState != ChangePutThings.PutState.None && _PutState != ChangePutThings.PutState.Delete)
         {
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
@@ -42,7 +32,7 @@ public class PutThingsDown : MonoBehaviour
                 _thingsDammy.transform.position = pointerPosInt;
                 _thingsDammy.transform.position += new Vector3(0, pointerPosInt.y - _thingsDammy.GetComponent<ThingsDammy>()._BottomPos.transform.position.y, 0);
 
-                if (hit.collider.gameObject.CompareTag("Ground") && GridManager.Instance.CanPlaceObjectAtPosition(pointerPosInt))
+                if (hit.collider.gameObject.CompareTag("Ground") && _gridManager.CanPlaceObjectAtPosition(pointerPosInt))
                 {
                     _thingsDammy.SetActive(true);
                     _canPutThings = true;
@@ -72,25 +62,42 @@ public class PutThingsDown : MonoBehaviour
 
     private void OnClickPutThings()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && _canPutThings && _gameManager._putState != GameManager.PutState.None)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && _canPutThings && _PutState != ChangePutThings.PutState.None)
         {
             if(_gameManager.GetMoney() >= _thingsPrice)
             {
                 Things things = Instantiate(_things, _thingsDammy.transform.position, _thingsDammy.transform.rotation).GetComponent<Things>();
-                GridManager.Instance.RegisterPlacedObject(_thingsDammy.transform.position, things.gameObject);
-                things.FindNextThings();
-                things.ConnectBackThings();
+                _gameManager.SetLogText($"{things._thingName}を置いた");
+                _gridManager.RegisterPlacedObject(_thingsDammy.transform.position, things.gameObject);
                 _gameManager.RemoveMoney(_thingsPrice);
+            }
+            else
+            {
+                _gameManager.SetLogText($"お金が足りない！{_thingsPrice}円必要です", true);
             }
         }
     }
 
     public void ChangeThings(GameObject things, GameObject thingsDammy, float thingsPrice)
     {
-        if (_things != null) { _thingsDammy.SetActive(false); }
+        HideDammy();
         _things = things;
         _thingsDammy = thingsDammy;
         _thingsPrice = thingsPrice;
         Debug.Log($"Put Things Changed: {_things.name}, {_thingsDammy.name}");
+    }
+
+    public void ChangePutState(ChangePutThings.PutState putState)
+    {
+        _PutState = putState;
+        HideDammy();
+    }
+
+    public void HideDammy()
+    {
+        if (_thingsDammy != null)
+        {
+            _thingsDammy.SetActive(false);
+        }
     }
 }

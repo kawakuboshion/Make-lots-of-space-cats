@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Things : MonoBehaviour
@@ -9,14 +10,18 @@ public class Things : MonoBehaviour
     [SerializeField] public float _Price;
     [SerializeField] public Cat _cat;
     [SerializeField] public string _thingName;
-    private GridManager _gridManager = GridManager.Instance;
+    protected GridManager _gridManager;
 
-    void Start()
+    protected void Start()
     {
         if (_gridManager == null)
         {
-            _gridManager = GridManager.Instance;
+            _gridManager = FindAnyObjectByType<GridManager>();
         }
+        FindNextThings();
+        FindBackThings();
+        FindRightSideThings();
+        FindLeftSideThings();
     }
     public virtual void MoveTheCat()
     {
@@ -31,17 +36,39 @@ public class Things : MonoBehaviour
             GameObject next = _gridManager.GetObjectAtPosition(transform.position + transform.forward);
             if (next != null)
             {
+                Debug.Log("Next object found: " + next.name);
                 _nextThings = next.GetComponent<Things>() != null ? next.GetComponent<Things>() : null;
             }
         }
     }
 
-    public virtual void ConnectBackThings()
+    public virtual void FindRightSideThings()
+    {
+        GameObject right = _gridManager.GetObjectAtPosition(transform.position + transform.right);
+        if (right != null)
+        {
+            right.GetComponent<Things>().FindNextThings();
+        }
+    }
+
+    public virtual void FindLeftSideThings()
+    {
+        GameObject left = _gridManager.GetObjectAtPosition(transform.position - transform.right);
+        if (left != null)
+        {
+            left.GetComponent<Things>().FindNextThings();
+        }
+    }
+
+    public virtual void FindBackThings()
     {
         GameObject back = _gridManager.GetObjectAtPosition(transform.position - transform.forward);
         if (back != null)
         {
-            back.GetComponent<Things>().FindNextThings();
+            if(_gridManager.GetObjectAtPosition(back.transform.position + back.transform.forward) == this.gameObject)
+            {
+                back.GetComponent<Things>().FindNextThings();
+            }
         }
     }
 

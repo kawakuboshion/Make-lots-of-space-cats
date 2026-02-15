@@ -3,21 +3,7 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    public static GridManager Instance { get; private set; }
     Dictionary<(float,float), GameObject> _placedObjectsAndVectors = new();
-
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     public bool CanPlaceObjectAtPosition(Vector3 position)
     {

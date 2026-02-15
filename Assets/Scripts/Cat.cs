@@ -4,8 +4,10 @@ using UnityEngine.UI;
 public class Cat : MonoBehaviour
 {
     [SerializeField] private Canvas _infoCanvas;
+    [SerializeField] private Image _spaceImage;
     [SerializeField] private Slider _infoProcessSlider;
     [SerializeField] public float _InfoProcessLevel = 100f;
+    [SerializeField] private float _initializedInfoProcessLevel = 100f;
     [SerializeField] private float _speed = 1.0f;
     public Things _inThings;
     public bool _isStopped = false;
@@ -13,10 +15,12 @@ public class Cat : MonoBehaviour
     private Vector3 _destination;
     private float _moveTime;
 
-    private void Start()
+    public void Initialize()
     {
+        _InfoProcessLevel = _initializedInfoProcessLevel;
         _infoProcessSlider.maxValue = _InfoProcessLevel;
         _infoProcessSlider.value = _InfoProcessLevel;
+        _spaceImage.color = new Color(_spaceImage.color.r, _spaceImage.color.g, _spaceImage.color.b, 0f);//‰F’ˆ‚Ì‰æ‘œ‚ğ“§–¾‚É‚·‚é
     }
 
     public void SetDestination(Vector3 destination)
@@ -44,6 +48,9 @@ public class Cat : MonoBehaviour
         {
             _InfoProcessLevel = 0f;
         }
+        //‰F’ˆ‚Ì‰æ‘œ‚ğî•ñˆ—“x‚ªŒ¸‚é‚É‚Â‚ê‚Ä™X‚ÉŒ©‚¦‚é‚æ‚¤‚É‚·‚é
+        float alpha = Mathf.InverseLerp(_initializedInfoProcessLevel, 0, _InfoProcessLevel);
+        _spaceImage.color = new Color(_spaceImage.color.r, _spaceImage.color.g, _spaceImage.color.b, alpha);
         _infoProcessSlider.value = _InfoProcessLevel;
     }
     // Update is called once per frame

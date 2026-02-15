@@ -7,6 +7,7 @@ public class OnClickSellEnergy : MonoBehaviour
     GameManager _gameManager = GameManager.Instance;
     public void SellEnergy()
     {
+        AudioManager.Instance.PlaySE(AudioManager.SE.OnClick);
         if (_gameManager != null)
         {
             Debug.Log("Attempting to sell energy...");
