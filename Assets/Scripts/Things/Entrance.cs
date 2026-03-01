@@ -28,7 +28,7 @@ public class Entrance : Things
             AudioManager.Instance.PlaySE(AudioManager.SE.Cat_Appeared);
             _nextThings._cat.SetInThings(_nextThings);
             _nextThings._cat.SetDestination(_nextThings.GetToMovePosition());
-            _cat.StartMoving();
+            _nextThings._cat.StartMoving();
         }
     }
 }
