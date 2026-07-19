@@ -6,6 +6,7 @@ public class PutThingsDown : MonoBehaviour
     [SerializeField] private GameObject _thingsDammy;
     [SerializeField] private GridManager _gridManager;
     [SerializeField] private GameManager _gameManager = GameManager.Instance;
+    [SerializeField] private CameraMove _cameraMove;
     private ChangePutThings.PutState _PutState;
     private Camera _mainCam;
     private float _thingsPrice;
@@ -31,6 +32,8 @@ public class PutThingsDown : MonoBehaviour
                 Vector3 pointerPosInt = new(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.y) + 1, Mathf.FloorToInt(hit.point.z));
                 _thingsDammy.transform.position = pointerPosInt;
                 _thingsDammy.transform.position += new Vector3(0, pointerPosInt.y - _thingsDammy.GetComponent<ThingsDammy>()._BottomPos.transform.position.y, 0);
+
+                _cameraMove.SetTarget(_thingsDammy.transform.position);
 
                 if (hit.collider.gameObject.CompareTag("Ground") && _gridManager.CanPlaceObjectAtPosition(pointerPosInt))
                 {
