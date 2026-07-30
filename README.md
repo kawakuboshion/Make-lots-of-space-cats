@@ -1,0 +1,32 @@
+# 🎮 たくさんの宇宙ネコをつくる!
+
+このゲームは市民が使用するエネルギーを
+宇宙ネコを作ることによて生産する
+シミュレーションゲームです。
+
+## 🚀 デモ
+- **紹介動画:** https://youtu.be/zYNv4llzrIs
+
+![ゲームのスクリーンショットやプレイGIFのパス](images/screenshot.png)
+
+## 🕹️ 操作方法
+
+| キー / 操作 | アクション |
+| :--- | :--- |
+| **0 ~ 9** | 行動切り替え |
+| **左クリック** | 物を置く / 消す |
+| **R** | 回転 |
+| **WASD** | カメラの移動 |
+| **E,Q** | カメラの回転 |
+| **マウスホイール** | ズーム |
+| **Space** | カメラのリセット |
+
+## 🛠️ 使用技術・ツール
+- **ゲームエンジン:** Unity 6000.0.40f1
+- **開発言語:** C#
+- **BGM・SE:** DOVA-SYNDROME / 効果音ラボ
+- **アセット:**
+- Inca Props (Pixelated Texture)
+- Low Poly Factory Machine Pack Demo
+- Free chibi cat
+- AllSky Free - 10 Sky / Skybox Set
