@@ -25,3 +25,8 @@
 - **ゲームエンジン:** Unity 6000.0.40f1
 - **開発言語:** C#
 - **BGM・SE:** DOVA-SYNDROME / 効果音ラボ
+- **アセット:**
+- Inca Props (Pixelated Texture)
+- Low Poly Factory Machine Pack Demo
+- Free chibi cat
+- AllSky Free - 10 Sky / Skybox Set
