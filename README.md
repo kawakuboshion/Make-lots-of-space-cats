@@ -7,6 +7,7 @@
 ## 🚀 デモ
 - **紹介動画:** [プレイ動画](https://youtu.be/zYNv4llzrIs)
 
+- **紹介画像**
 ![ゲームのスクリーンショットやプレイGIFのパス](https://github.com/kawakuboshion/Make-lots-of-space-cats/blob/master/Assets/HowToPlay/HowToPlay1.png)
 ![ゲームのスクリーンショットやプレイGIFのパス](https://github.com/kawakuboshion/Make-lots-of-space-cats/blob/master/Assets/HowToPlay/HowToPlay2.png)
 ![ゲームのスクリーンショットやプレイGIFのパス](https://github.com/kawakuboshion/Make-lots-of-space-cats/blob/master/Assets/HowToPlay/HowToPlay3.png)
